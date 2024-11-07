@@ -2,13 +2,16 @@ package com.example.schedulemanagement.repository;
 
 import com.example.schedulemanagement.dto.ScheduleResponseDto;
 import com.example.schedulemanagement.entity.Schedule;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -30,6 +33,7 @@ public class JdbcScheduleRepository implements ScheduleRepository{
     public ScheduleResponseDto saveSchedule(Schedule schedule) {
 
         LocalDate now = LocalDate.now();
+        Date sqlNow = Date.valueOf(now);
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();
@@ -40,18 +44,34 @@ public class JdbcScheduleRepository implements ScheduleRepository{
         parameters.put("modification_date" , now);
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
-        return new ScheduleResponseDto(key.longValue() , schedule.getPassword() , schedule.getUser_id() , schedule.getDetail() , now , now);
+        return new ScheduleResponseDto(key.longValue() , schedule.getPassword() , schedule.getUser_id() , schedule.getDetail() , sqlNow , sqlNow);
     }
 
     @Override
     public List<ScheduleResponseDto> findAllSchedule() {
 
-        return jdbcTemplate.query("select * from schedule" , scheduleRowMapper());
+        return jdbcTemplate.query("select * from schedule order by modification_date desc" , scheduleRowMapper());
     }
 
     @Override
     public List<ScheduleResponseDto> findAllScheduleByUserId(Long user_id) {
-        return jdbcTemplate.query("select * from schedule where user_id = ?" , scheduleRowMapper() , user_id);
+        return jdbcTemplate.query("select * from schedule where user_id = ? order by modification_date desc" , scheduleRowMapper() , user_id);
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllScheduleByDate(Date date) {
+        return jdbcTemplate.query("select * from schedule where modification_date = ? order by modification_date desc" , scheduleRowMapper() , date);
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllScheduleByUserIdAndDate(Long user_id, Date date) {
+        return jdbcTemplate.query("select * from schedule where user_id = ? && modification_date = ? order by modification_date desc" , scheduleRowMapper() ,user_id, date);
+    }
+
+    @Override
+    public Schedule findScheduleByIdOrElseThrow(Long id) {
+        List<Schedule> result = jdbcTemplate.query("select * from schedule where id = ?", scheduleRowMapperV2(),id);
+        return result.stream().findAny().orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Does not exist id = "+ id));
     }
 
 
@@ -75,8 +95,8 @@ public class JdbcScheduleRepository implements ScheduleRepository{
                         rs.getString("password"),
                         rs.getLong("user_id"),
                         rs.getString("detail"),
-                        rs.getDate("registration_date").toLocalDate(),
-                        rs.getDate("modification_date").toLocalDate()
+                        rs.getDate("registration_date"),
+                        rs.getDate("modification_date")
                 );
             }
         };
@@ -91,8 +111,8 @@ public class JdbcScheduleRepository implements ScheduleRepository{
                         rs.getString("password"),
                         rs.getLong("user_id"),
                         rs.getString("detail"),
-                        rs.getDate("registration_date").toLocalDate(),
-                        rs.getDate("modification_date").toLocalDate()
+                        rs.getDate("registration_date"),
+                        rs.getDate("modification_date")
                 );
             }
         };

@@ -15,8 +15,8 @@ public class Schedule {
     private String password;
     private Long user_id;
     private String detail;
-    private LocalDate registration_date;
-    private LocalDate modification_date;
+    private Date registration_date;
+    private Date modification_date;
 
 
     public Schedule(String password , Long user_id , String detail){

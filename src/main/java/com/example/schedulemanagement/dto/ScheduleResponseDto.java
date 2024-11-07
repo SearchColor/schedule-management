@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @AllArgsConstructor
@@ -15,8 +16,8 @@ public class ScheduleResponseDto {
     private String password;
     private Long user_id;
     private String detail;
-    private LocalDate registration_date;
-    private LocalDate modification_date;
+    private Date registration_date;
+    private Date modification_date;
 
     public ScheduleResponseDto(Schedule schedule){
         this.id = schedule.getId();

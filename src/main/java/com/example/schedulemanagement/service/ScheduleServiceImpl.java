@@ -6,6 +6,7 @@ import com.example.schedulemanagement.entity.Schedule;
 import com.example.schedulemanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 
 @Service
@@ -38,5 +39,24 @@ public class ScheduleServiceImpl implements ScheduleService{
     public List<ScheduleResponseDto> findAllScheduleByUserId(Long user_id) {
         List<ScheduleResponseDto> allScheduleByUserId = scheduleRepository.findAllScheduleByUserId(user_id);
         return allScheduleByUserId;
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllScheduleByDate(Date date) {
+        List<ScheduleResponseDto> allScheduleByDate = scheduleRepository.findAllScheduleByDate(date);
+        return allScheduleByDate;
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllScheduleByUserIdAndDate(Long user_id, Date date) {
+        List<ScheduleResponseDto> allScheduleByUserIdAndDate = scheduleRepository.findAllScheduleByUserIdAndDate(user_id , date);
+        return allScheduleByUserIdAndDate;
+    }
+
+    @Override
+    public ScheduleResponseDto findScheduleByIdOrElseThrow(Long id) {
+
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+        return new ScheduleResponseDto(schedule);
     }
 }
