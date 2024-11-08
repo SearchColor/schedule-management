@@ -1,13 +1,11 @@
 package com.example.schedulemanagement.dto;
 
 
-import com.example.schedulemanagement.entity.Schedule;
+
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NonNull;
+
 
 @Getter
 public class ScheduleRequestDto {
