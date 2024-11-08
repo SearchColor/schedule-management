@@ -21,20 +21,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgument(final IllegalArgumentException e) {
-        log.warn("handleIllegalArgument", e);
-        final ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
-        return handleExceptionInternal(errorCode, e.getMessage());
-    }
-
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleAllException(final Exception ex) {
-        log.warn("handleAllException", ex);
-        final ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode);
-    }
-
     private ResponseEntity<Object> handleExceptionInternal(final ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(errorCode));
@@ -44,18 +30,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ErrorResponse.builder()
                 .code(errorCode.name())
                 .message(errorCode.getMessage())
-                .build();
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(final ErrorCode errorCode, final String message) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode, message));
-    }
-
-    private ErrorResponse makeErrorResponse(final ErrorCode errorCode, final String message) {
-        return ErrorResponse.builder()
-                .code(errorCode.name())
-                .message(message)
                 .build();
     }
 
