@@ -1,12 +1,20 @@
 package com.example.schedulemanagement.service;
 
+import com.example.schedulemanagement.dto.ScheduleJoinResponseDto;
 import com.example.schedulemanagement.dto.ScheduleRequestDto;
 import com.example.schedulemanagement.dto.ScheduleResponseDto;
 import com.example.schedulemanagement.entity.Schedule;
+import com.example.schedulemanagement.erros.errorcode.CustomErrorCode;
+import com.example.schedulemanagement.erros.exception.RestApiException;
 import com.example.schedulemanagement.repository.ScheduleRepository;
+import org.hibernate.validator.internal.constraintvalidators.bv.notempty.NotEmptyValidatorForArray;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
+import java.util.EmptyStackException;
 import java.util.List;
 
 @Service
@@ -16,6 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     public ScheduleServiceImpl(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
+
     }
 
     @Override
@@ -29,27 +38,35 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllSchedule() {
+    public List<ScheduleJoinResponseDto> findAllSchedule() {
 
-        List<ScheduleResponseDto> allSchedule = scheduleRepository.findAllSchedule();
+        List<ScheduleJoinResponseDto> allSchedule = scheduleRepository.findAllSchedule();
         return allSchedule;
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllScheduleByUserId(Long user_id) {
-        List<ScheduleResponseDto> allScheduleByUserId = scheduleRepository.findAllScheduleByUserId(user_id);
+    public List<ScheduleJoinResponseDto> findAllScheduleByPage(Integer pageNum, Integer pageSize) {
+
+        List<ScheduleJoinResponseDto> findAllScheduleByPage = scheduleRepository.findAllScheduleByPage(pageNum , pageSize);
+        return findAllScheduleByPage;
+    }
+
+
+    @Override
+    public List<ScheduleJoinResponseDto> findAllScheduleByUserId(Long user_id) {
+        List<ScheduleJoinResponseDto> allScheduleByUserId = scheduleRepository.findAllScheduleByUserId(user_id);
         return allScheduleByUserId;
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllScheduleByDate(Date date) {
-        List<ScheduleResponseDto> allScheduleByDate = scheduleRepository.findAllScheduleByDate(date);
+    public List<ScheduleJoinResponseDto> findAllScheduleByDate(Date date) {
+        List<ScheduleJoinResponseDto> allScheduleByDate = scheduleRepository.findAllScheduleByDate(date);
         return allScheduleByDate;
     }
 
     @Override
-    public List<ScheduleResponseDto> findAllScheduleByUserIdAndDate(Long user_id, Date date) {
-        List<ScheduleResponseDto> allScheduleByUserIdAndDate = scheduleRepository.findAllScheduleByUserIdAndDate(user_id , date);
+    public List<ScheduleJoinResponseDto> findAllScheduleByUserIdAndDate(Long user_id, Date date) {
+        List<ScheduleJoinResponseDto> allScheduleByUserIdAndDate = scheduleRepository.findAllScheduleByUserIdAndDate(user_id , date);
         return allScheduleByUserIdAndDate;
     }
 
@@ -59,4 +76,43 @@ public class ScheduleServiceImpl implements ScheduleService{
         Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
         return new ScheduleResponseDto(schedule);
     }
+
+    @Transactional
+    @Override
+    public ScheduleResponseDto updateSchedule(Long id, String password, Long user_id, String detail) {
+
+        if(password == null || detail == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "The password and detail are required values.");
+        }
+
+        int updateRow = scheduleRepository.updateSchedule(id,password,user_id,detail);
+
+        if (updateRow == 0){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Does not exist id = "+ id);
+        }
+
+        Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);
+
+        return new ScheduleResponseDto(schedule);
+    }
+
+    @Override
+    public void deleteSchedule(Long id , String password) {
+
+        int deleteRow = scheduleRepository.deleteSchedule(id ,password);
+
+        int slectSchedule = scheduleRepository.countScheduleById(id);
+
+        if (slectSchedule == 0){
+            throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        if (deleteRow == 0){
+            throw new RestApiException(CustomErrorCode.INVALID_PASSWORD);
+        }
+
+    }
+
+
+
 }

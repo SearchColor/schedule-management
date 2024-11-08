@@ -4,6 +4,7 @@ package com.example.schedulemanagement.dto;
 import com.example.schedulemanagement.entity.Schedule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -28,13 +29,5 @@ public class ScheduleResponseDto {
         this.modification_date = schedule.getModification_date();
 
     }
-
-//    public ScheduleResponseDto(Long id ,String password , Long user_id , String detail){
-//        this.id = id;
-//        this.password = password;
-//        this.user_id =user_id;
-//        this.detail = detail;
-//
-//    }
 
 }

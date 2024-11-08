@@ -1,5 +1,6 @@
 package com.example.schedulemanagement.repository;
 
+import com.example.schedulemanagement.dto.ScheduleJoinResponseDto;
 import com.example.schedulemanagement.dto.ScheduleResponseDto;
 import com.example.schedulemanagement.entity.Schedule;
 
@@ -10,13 +11,13 @@ public interface ScheduleRepository {
 
     ScheduleResponseDto saveSchedule(Schedule schedule);
 
-    List<ScheduleResponseDto> findAllSchedule();
+    List<ScheduleJoinResponseDto> findAllSchedule();
 
-    List<ScheduleResponseDto> findAllScheduleByUserId(Long user_id);
+    List<ScheduleJoinResponseDto> findAllScheduleByUserId(Long user_id);
 
-    List<ScheduleResponseDto> findAllScheduleByDate(Date date);
+    List<ScheduleJoinResponseDto> findAllScheduleByDate(Date date);
 
-    List<ScheduleResponseDto> findAllScheduleByUserIdAndDate(Long user_id , Date date);
+    List<ScheduleJoinResponseDto> findAllScheduleByUserIdAndDate(Long user_id , Date date);
 
     Schedule findScheduleByIdOrElseThrow(Long id);
 
@@ -24,5 +25,9 @@ public interface ScheduleRepository {
 
     int deleteSchedule(Long id , String password);
 
+    List<ScheduleJoinResponseDto> findAllScheduleByPage(Integer pageNum , Integer pageSize);
+
+
+    int countScheduleById(Long id);
 
 }
