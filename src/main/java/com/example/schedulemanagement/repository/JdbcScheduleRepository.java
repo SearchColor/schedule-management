@@ -94,7 +94,7 @@ public class JdbcScheduleRepository implements ScheduleRepository{
 
 
     @Override
-    public int updateSchedule(Long id, String password, Long user_id, String detail) {
+    public int updateSchedule(Long id, String password, String detail) {
         int updateRow = jdbcTemplate.update("update schedule set detail = ? , modification_date = (current_date) where id = ? && password = ?" , detail, id, password );
         return updateRow;
     }

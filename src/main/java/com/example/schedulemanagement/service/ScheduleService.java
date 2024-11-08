@@ -22,7 +22,7 @@ public interface ScheduleService {
 
     ScheduleResponseDto findScheduleByIdOrElseThrow (Long id);
 
-    ScheduleResponseDto updateSchedule(Long id , String password , Long user_id, String detail);
+    ScheduleResponseDto updateSchedule(Long id , String password , String detail);
 
     void deleteSchedule(Long id , String password);
 

@@ -79,16 +79,22 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     @Transactional
     @Override
-    public ScheduleResponseDto updateSchedule(Long id, String password, Long user_id, String detail) {
+    public ScheduleResponseDto updateSchedule(Long id, String password, String detail) {
 
         if(password == null || detail == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "The password and detail are required values.");
         }
 
-        int updateRow = scheduleRepository.updateSchedule(id,password,user_id,detail);
+        int slectSchedule = scheduleRepository.countScheduleById(id);
+
+        if (slectSchedule == 0){
+            throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        int updateRow = scheduleRepository.updateSchedule(id,password,detail);
 
         if (updateRow == 0){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND , "Does not exist id = "+ id);
+            throw new RestApiException(CustomErrorCode.INVALID_PASSWORD);
         }
 
         Schedule schedule = scheduleRepository.findScheduleByIdOrElseThrow(id);

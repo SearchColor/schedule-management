@@ -72,7 +72,7 @@ public class ScheduleController {
             @PathVariable Long id,
             @RequestBody ScheduleRequestDto requestDto
     ){
-        return new ResponseEntity<>(scheduleService.updateSchedule(id , requestDto.getPassword() , requestDto.getUser_id() , requestDto.getDetail()) , HttpStatus.OK);
+        return new ResponseEntity<>(scheduleService.updateSchedule(id , requestDto.getPassword() , requestDto.getDetail()) , HttpStatus.OK);
     }
 
 
