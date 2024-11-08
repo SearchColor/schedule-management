@@ -30,7 +30,7 @@ public class JdbcScheduleRepository implements ScheduleRepository{
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
+    //SimpleJdbcInsert 사용하여 insert query 진행
     @Override
     public ScheduleResponseDto saveSchedule(Schedule schedule) {
 
@@ -42,8 +42,8 @@ public class JdbcScheduleRepository implements ScheduleRepository{
         parameters.put("password" , schedule.getPassword());
         parameters.put("user_id" , schedule.getUser_id());
         parameters.put("detail" , schedule.getDetail());
-        parameters.put("registration_date" , now);
-        parameters.put("modification_date" , now);
+        parameters.put("registration_date" , sqlNow);
+        parameters.put("modification_date" , sqlNow);
 
         Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
         return new ScheduleResponseDto(key.longValue() , schedule.getPassword() , schedule.getUser_id() , schedule.getDetail() , sqlNow , sqlNow);
@@ -51,7 +51,6 @@ public class JdbcScheduleRepository implements ScheduleRepository{
 
     @Override
     public List<ScheduleJoinResponseDto> findAllSchedule() {
-
         return jdbcTemplate.query("select s.*, u.name from schedule as s  LEFT OUTER JOIN user as u ON s.user_id = u.id order by modification_date desc" , scheduleRowMapperV1());
     }
 
@@ -64,8 +63,6 @@ public class JdbcScheduleRepository implements ScheduleRepository{
 
         return jdbcTemplate.query(querySql,scheduleRowMapperV1());
     }
-
-
 
     @Override
     public List<ScheduleJoinResponseDto> findAllScheduleByUserId(Long user_id) {
@@ -87,27 +84,27 @@ public class JdbcScheduleRepository implements ScheduleRepository{
     }
 
     @Override
-    public Schedule findScheduleByIdOrElseThrow(Long id) {
+    public Schedule findScheduleByIdOrElseThrow(Long id) { //id 조회
         List<Schedule> result = jdbcTemplate.query("select * from schedule where id = ?", scheduleRowMapperV2(),id);
         return result.stream().findAny().orElseThrow(()->new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND));
     }
 
 
     @Override
-    public int updateSchedule(Long id, String password, String detail) {
+    public int updateSchedule(Long id, String password, String detail) { //update query
         int updateRow = jdbcTemplate.update("update schedule set detail = ? , modification_date = (current_date) where id = ? && password = ?" , detail, id, password );
         return updateRow;
     }
 
     @Override
-    public int deleteSchedule(Long id, String password) {
+    public int deleteSchedule(Long id, String password) { //delete query
         String deleteQuery = "delete from schedule where id = ? && password = ?";
         int result = jdbcTemplate.update(deleteQuery ,id ,password);
         return result;
     }
 
     @Override
-    public int countScheduleById(Long id) {
+    public int countScheduleById(Long id) { //id 조회 row count
 
         String selectQuery = "select count(id) as count from schedule where id = "+id;
         int result = jdbcTemplate.queryForObject(selectQuery , Integer.class);

@@ -7,6 +7,7 @@ import com.example.schedulemanagement.erros.exception.RestApiException;
 import com.example.schedulemanagement.erros.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -20,6 +21,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         final ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
     }
+
 
     private ResponseEntity<Object> handleExceptionInternal(final ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())

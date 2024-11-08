@@ -105,13 +105,12 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public void deleteSchedule(Long id , String password) {
 
-        int deleteRow = scheduleRepository.deleteSchedule(id ,password);
-
         int slectSchedule = scheduleRepository.countScheduleById(id);
 
         if (slectSchedule == 0){
             throw new RestApiException(CustomErrorCode.RESOURCE_NOT_FOUND);
         }
+        int deleteRow = scheduleRepository.deleteSchedule(id ,password);
 
         if (deleteRow == 0){
             throw new RestApiException(CustomErrorCode.INVALID_PASSWORD);

@@ -8,10 +8,12 @@ import com.example.schedulemanagement.entity.Schedule;
 import com.example.schedulemanagement.erros.errorcode.CustomErrorCode;
 import com.example.schedulemanagement.erros.exception.RestApiException;
 import com.example.schedulemanagement.service.ScheduleService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.relational.core.sql.Assignment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -28,7 +30,7 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleRequestDto requestDto){
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@Valid @RequestBody ScheduleRequestDto requestDto){
 
         return new ResponseEntity<>(scheduleService.saveSchedule(requestDto) , HttpStatus.CREATED);
     }
